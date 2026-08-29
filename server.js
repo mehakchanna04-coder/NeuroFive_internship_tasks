@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const DEFAULT_PORT = 3000;
+const PORT = Number(process.env.PORT) || DEFAULT_PORT;
 
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -17,6 +18,21 @@ app.get('/', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Health check API running on http://localhost:${PORT}`);
-});
+const startServer = (port) => {
+  const server = app.listen(port, () => {
+    console.log(`Health check API running on http://localhost:${port}`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      const nextPort = port + 1;
+      console.log(`Port ${port} is busy. Trying ${nextPort} instead...`);
+      startServer(nextPort);
+      return;
+    }
+
+    throw err;
+  });
+};
+
+startServer(PORT);
