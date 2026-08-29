@@ -1,0 +1,63 @@
+const mongoose = require('mongoose');
+
+const MONGODB_URI = process.env.MONGODB_URI;
+const RETRIES = parseInt(process.env.DB_CONNECT_RETRIES || '5', 10);
+const RETRY_DELAY = parseInt(process.env.DB_CONNECT_RETRY_DELAY || '3000', 10);
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Connects to MongoDB with retry logic.
+ * - Never crashes silently: every failure is logged.
+ * - Retries a configurable number of times before giving up.
+ * - Exits the process deliberately (non-zero code) if it can never connect,
+ *   rather than letting the app run in a broken state.
+ */
+async function connectDB() {
+  if (!MONGODB_URI) {
+    console.error(
+      '[DB] FATAL: MONGODB_URI is not set. Create a .env file (see .env.example) with your connection string.'
+    );
+    process.exit(1);
+  }
+
+  for (let attempt = 1; attempt <= RETRIES; attempt++) {
+    try {
+      await mongoose.connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+      });
+      console.log(`[DB] Connected to MongoDB (attempt ${attempt}/${RETRIES})`);
+      return;
+    } catch (err) {
+      console.error(
+        `[DB] Connection attempt ${attempt}/${RETRIES} failed: ${err.message}`
+      );
+      if (attempt === RETRIES) {
+        console.error(
+          '[DB] FATAL: Could not connect to MongoDB after multiple attempts. Exiting.'
+        );
+        process.exit(1);
+      }
+      await sleep(RETRY_DELAY);
+    }
+  }
+}
+
+// Handle connection loss / errors AFTER the initial successful connection
+// (e.g. DB restarts, network blip). We log loudly instead of letting
+// requests silently fail against a dead connection.
+mongoose.connection.on('error', (err) => {
+  console.error('[DB] Mongoose connection error:', err.message);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('[DB] Mongoose lost connection to MongoDB.');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('[DB] Mongoose reconnected to MongoDB.');
+});
+
+module.exports = connectDB;
