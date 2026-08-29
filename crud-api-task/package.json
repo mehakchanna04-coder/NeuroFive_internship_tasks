@@ -1,0 +1,20 @@
+{
+  "name": "crud-api-task",
+  "version": "1.0.0",
+  "description": "In-memory CRUD API for a task resource",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "crud",
+    "api",
+    "express",
+    "tasks"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
