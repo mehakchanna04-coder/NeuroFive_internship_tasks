@@ -1,0 +1,241 @@
+{
+  "info": {
+    "name": "Job Board API",
+    "description": "Full endpoint collection for the Job Board API. Set the `baseUrl` variable, then run Auth > Signup (Employer) and Auth > Signup (Candidate) to populate tokens automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "employerToken", "value": "" },
+    { "key": "candidateToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "jobId", "value": "" },
+    { "key": "applicationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup (Employer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body?.data?.token) pm.collectionVariables.set('employerToken', body.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/signup",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Recruiter\",\n  \"email\": \"employer@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"EMPLOYER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signup (Candidate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body?.data?.token) pm.collectionVariables.set('candidateToken', body.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/signup",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jamie Candidate\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"CANDIDATE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employer@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Current User (me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Create Job (Employer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body?.data?.job?.id) pm.collectionVariables.set('jobId', body.data.job.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/jobs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Backend Engineer\",\n  \"company\": \"Acme Corp\",\n  \"description\": \"Design and build scalable REST APIs for our platform.\",\n  \"location\": \"Remote\",\n  \"type\": \"FULL_TIME\",\n  \"salaryMin\": 100000,\n  \"salaryMax\": 150000\n}"
+            }
+          }
+        },
+        {
+          "name": "List Jobs (public, search/filter/pagination)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs?page=1&limit=10&search=engineer&location=Remote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "engineer" },
+                { "key": "location", "value": "Remote" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Job by ID (public)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/jobs/{{jobId}}" }
+        },
+        {
+          "name": "List My Jobs (Employer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": "{{baseUrl}}/api/jobs/mine"
+          }
+        },
+        {
+          "name": "Update Job (owning Employer)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/jobs/{{jobId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"salaryMax\": 160000\n}" }
+          }
+        },
+        {
+          "name": "Delete Job (owning Employer)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": "{{baseUrl}}/api/jobs/{{jobId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Apply to Job (Candidate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body?.data?.application?.id) pm.collectionVariables.set('applicationId', body.data.application.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/jobs/{{jobId}}/applications",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coverNote\": \"I'd love to bring my experience to this role!\",\n  \"resumeUrl\": \"https://example.com/resume.pdf\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Applications for Job (owning Employer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": "{{baseUrl}}/api/jobs/{{jobId}}/applications"
+          }
+        },
+        {
+          "name": "List My Applications (Candidate)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": "{{baseUrl}}/api/applications/mine"
+          }
+        },
+        {
+          "name": "Update Application Status (owning Employer)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/applications/{{applicationId}}/status",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"ACCEPTED\"\n}" }
+          }
+        },
+        {
+          "name": "Withdraw Application (owning Candidate)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": "{{baseUrl}}/api/applications/{{applicationId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        { "name": "Health Check", "request": { "method": "GET", "url": "{{baseUrl}}/health" } }
+      ]
+    }
+  ]
+}
