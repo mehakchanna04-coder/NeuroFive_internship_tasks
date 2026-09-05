@@ -13,7 +13,7 @@ relational data modeling, auth, validation, error handling, testing, and deploym
 
 ## Live demo
 
-- **API base URL:** `https://<your-deployed-url>` *(fill in after deploying — see [Deployment](#deployment))*
+- **API base URL:** https://neuro-five-internship-tasks.vercel.app/api-docs/>` *(fill in after deploying — see [Deployment](#deployment))*
 - **Interactive API docs (Swagger UI):** `https://<your-deployed-url>/api-docs`
 - **Postman collection:** [`postman_collection.json`](./postman_collection.json) — import directly into Postman
 
