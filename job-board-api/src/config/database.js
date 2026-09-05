@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-require("pg"); // force Vercel's build-time dependency scanner to bundle the pg driver
+const pg = require("pg");
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -9,6 +9,7 @@ if (!databaseUrl) {
 
 const sequelize = new Sequelize(databaseUrl, {
   dialect: "postgres",
+  dialectModule: pg, // pass the driver directly so bundlers (Vercel) don't need to trace Sequelize's internal dynamic require
   logging: process.env.SQL_LOGGING === "true" ? console.log : false,
   dialectOptions: {
     ssl: process.env.DB_SSL === "true" ? { require: true, rejectUnauthorized: false } : undefined,
