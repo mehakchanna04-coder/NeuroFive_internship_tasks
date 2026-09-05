@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+require("pg"); // force Vercel's build-time dependency scanner to bundle the pg driver
 
 const databaseUrl = process.env.DATABASE_URL;
 
