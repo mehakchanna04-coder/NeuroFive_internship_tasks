@@ -1,42 +1,60 @@
-# Job Board API
+<div align="center">
 
-A production-style REST API for a job board: **employers post jobs, candidates apply.**
+# 💼 Job Board API
+
+**A production-style REST API for a job board — employers post jobs, candidates apply.**
+
 Built with Node.js, Express, PostgreSQL (via Sequelize), and JWT authentication with
 role-based access control.
 
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Sequelize](https://img.shields.io/badge/ORM-Sequelize-52B0E7?logo=sequelize&logoColor=white)](https://sequelize.org/)
+[![Tests](https://img.shields.io/badge/tests-30%20passing-brightgreen)](#running-tests)
+[![Deployed](https://img.shields.io/badge/deployed-Vercel-black?logo=vercel)](https://neuro-five-internship-tasks.vercel.app)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+
+</div>
+
 This is a portfolio/interview project demonstrating full-stack backend fundamentals:
-relational data modeling, auth, validation, error handling, testing, and deployment.
+relational data modeling, authentication, validation, error handling, testing, and
+deployment.
 
 > 📄 See [ARCHITECTURE.md](./ARCHITECTURE.md) for design decisions and trade-offs.
 
 ---
 
-## Live demo
+## 🔗 Live demo
 
-- **API base URL:** https://neuro-five-internship-tasks.vercel.app/api-docs/>` *(fill in after deploying — see [Deployment](#deployment))*
-- **Interactive API docs (Swagger UI):** `https://<your-deployed-url>/api-docs`
-- **Postman collection:** [`postman_collection.json`](./postman_collection.json) — import directly into Postman
-
----
-
-## Table of contents
-
-- [Features](#features)
-- [Tech stack](#tech-stack)
-- [Data model](#data-model)
-- [Getting started (local dev)](#getting-started-local-dev)
-- [Running tests](#running-tests)
-- [Environment variables](#environment-variables)
-- [API reference](#api-reference)
-- [Roles & permissions](#roles--permissions)
-- [Error handling](#error-handling)
-- [Docker](#docker)
-- [Deployment](#deployment)
-- [Project structure](#project-structure)
+| Resource | Link |
+|---|---|
+| **API base URL** | [`neuro-five-internship-tasks.vercel.app`](https://neuro-five-internship-tasks.vercel.app) |
+| **Interactive API docs (Swagger UI)** | [`/api-docs`](https://neuro-five-internship-tasks.vercel.app/api-docs) |
+| **Health check** | [`/health`](https://neuro-five-internship-tasks.vercel.app/health) |
+| **Postman collection** | [`postman_collection.json`](./postman_collection.json) — import directly into Postman |
 
 ---
 
-## Features
+## 📑 Table of contents
+
+- [Features](#-features)
+- [Tech stack](#-tech-stack)
+- [Data model](#-data-model)
+- [Getting started (local dev)](#-getting-started-local-dev)
+- [Running tests](#-running-tests)
+- [Environment variables](#-environment-variables)
+- [API reference](#-api-reference)
+- [Roles & permissions](#-roles--permissions)
+- [Error handling](#-error-handling)
+- [Docker](#-docker)
+- [Deployment](#-deployment)
+- [Project structure](#-project-structure)
+- [Author](#-author)
+
+---
+
+## ✨ Features
 
 **MVP**
 - Full CRUD on **Jobs** (core resource) and **Applications** (related resource), persisted in PostgreSQL
@@ -56,24 +74,25 @@ relational data modeling, auth, validation, error handling, testing, and deploym
 
 ---
 
-## Tech stack
+## 🧰 Tech stack
 
-| Layer          | Choice                                    |
-|----------------|--------------------------------------------|
-| Runtime        | Node.js 18+                                |
-| Framework      | Express 4                                  |
-| Database       | PostgreSQL                                 |
-| ORM            | Sequelize 6 (+ `sequelize-cli` migrations) |
-| Auth           | JSON Web Tokens (`jsonwebtoken`) + `bcryptjs` |
-| Validation     | Zod                                        |
-| Testing        | Jest + Supertest                           |
-| Docs           | `swagger-jsdoc` + `swagger-ui-express`     |
-| Security       | `helmet`, `cors`, `express-rate-limit`     |
-| Containerization | Docker / docker-compose                  |
+| Layer            | Choice                                        |
+|------------------|------------------------------------------------|
+| Runtime          | Node.js 18+                                     |
+| Framework        | Express 4                                       |
+| Database         | PostgreSQL (Neon in production)                 |
+| ORM              | Sequelize 6 (+ `sequelize-cli` migrations)      |
+| Auth             | JSON Web Tokens (`jsonwebtoken`) + `bcryptjs`    |
+| Validation       | Zod                                             |
+| Testing          | Jest + Supertest                                |
+| Docs             | `swagger-jsdoc` + `swagger-ui-express`          |
+| Security         | `helmet`, `cors`, `express-rate-limit`          |
+| Containerization | Docker / docker-compose                         |
+| Hosting          | Vercel (serverless)                             |
 
 ---
 
-## Data model
+## 🗂️ Data model
 
 ```
 User (1) ──< (many) Job          [employerId FK]
@@ -91,11 +110,11 @@ Full schema lives in [`migrations/`](./migrations).
 
 ---
 
-## Getting started (local dev)
+## 🚀 Getting started (local dev)
 
 ### Prerequisites
 - Node.js 18+
-- PostgreSQL 14+ running locally, **or** Docker (see [Docker](#docker) to skip local Postgres entirely)
+- PostgreSQL 14+ running locally, **or** Docker (see [Docker](#-docker) to skip local Postgres entirely)
 
 ### 1. Clone and install
 ```bash
@@ -143,7 +162,7 @@ The API is now running at `http://localhost:4000`, with docs at `http://localhos
 
 ---
 
-## Running tests
+## 🧪 Running tests
 
 The test suite runs real HTTP requests (via Supertest) against a real PostgreSQL
 database — no mocking of the database layer, so tests exercise the full stack
@@ -157,15 +176,15 @@ npm test
 This automatically applies migrations to the test database before running (see
 `tests/globalSetup.js`), then runs all 30 tests across 3 suites:
 
-| Suite                    | Tests | Covers |
-|---------------------------|-------|--------|
-| `tests/auth.test.js`       | 8     | Signup, login, `/me`, validation errors, duplicate email, ADMIN self-assignment blocked |
-| `tests/jobs.test.js`       | 10    | CRUD, RBAC, ownership checks, search/filter/pagination, 404s |
-| `tests/applications.test.js` | 12  | Applying, duplicate-application prevention, employer review flow, status updates, withdrawal |
+| Suite                         | Tests | Covers |
+|--------------------------------|-------|--------|
+| `tests/auth.test.js`           | 8     | Signup, login, `/me`, validation errors, duplicate email, ADMIN self-assignment blocked |
+| `tests/jobs.test.js`           | 10    | CRUD, RBAC, ownership checks, search/filter/pagination, 404s |
+| `tests/applications.test.js`   | 12    | Applying, duplicate-application prevention, employer review flow, status updates, withdrawal |
 
 ---
 
-## Environment variables
+## 🔐 Environment variables
 
 See [`.env.example`](./.env.example) for the full list with comments. Summary:
 
@@ -182,9 +201,9 @@ See [`.env.example`](./.env.example) for the full list with comments. Summary:
 
 ---
 
-## API reference
+## 📡 API reference
 
-Full interactive docs live at **`/api-docs`** once the server is running. Summary:
+Full interactive docs live at **[`/api-docs`](https://neuro-five-internship-tasks.vercel.app/api-docs)**. Summary:
 
 ### Auth
 | Method | Endpoint | Auth | Description |
@@ -216,7 +235,7 @@ All authenticated endpoints expect `Authorization: Bearer <token>`.
 
 ---
 
-## Roles & permissions
+## 👥 Roles & permissions
 
 | Role | Can do |
 |---|---|
@@ -233,7 +252,7 @@ Both layers are covered by tests (see `jobs.test.js` → "ownership enforcement"
 
 ---
 
-## Error handling
+## ⚠️ Error handling
 
 Every error response has the same shape:
 ```json
@@ -250,7 +269,7 @@ errors (unique constraint, FK violation, validation), JWT errors, and generic
 
 ---
 
-## Docker
+## 🐳 Docker
 
 Spin up the API **and** a Postgres instance with one command — no local Postgres install needed:
 
@@ -264,42 +283,51 @@ to change the default dev credentials/JWT secret before deploying anywhere real.
 
 ---
 
-## Deployment
+## ☁️ Deployment
 
-This API is stateless and config-driven via environment variables, so it deploys
-cleanly to any Node host with a managed Postgres add-on (Render, Railway, Fly.io,
-Heroku, etc.). General steps:
+This API is stateless and config-driven via environment variables. It's currently
+deployed on **Vercel** (serverless) with a **Neon** Postgres database, but it deploys
+just as cleanly to any traditional Node host with a managed Postgres add-on (Render,
+Railway, Fly.io, Heroku, etc.).
 
+**Deploying on Render/Railway (traditional Node host):**
 1. Provision a managed PostgreSQL database and copy its connection string.
 2. Create the web service from this repo, with:
    - **Build command:** `npm install`
    - **Start command:** `npm run migrate && npm start`
-   - **Environment variables:** `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `NODE_ENV=production`, `DB_SSL=true` (most managed Postgres requires SSL), `PUBLIC_URL` (your deployed URL, for Swagger)
+   - **Environment variables:** `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `NODE_ENV=production`, `DB_SSL=true`, `PUBLIC_URL` (your deployed URL, for Swagger)
 3. Deploy. Confirm `GET /health` returns `200`.
 4. Visit `/api-docs` on the deployed URL to confirm Swagger picked up `PUBLIC_URL`.
 
+**Deploying on Vercel (serverless):** see [`api/index.js`](./api/index.js) and
+[`vercel.json`](./vercel.json) — the app is exported as a handler rather than calling
+`app.listen()`, and `vercel.json` explicitly bundles the Sequelize `pg` driver and
+Swagger's static assets, which Vercel's dependency tracer doesn't pick up automatically.
+
 ---
 
-## Project structure
+## 📁 Project structure
 
 ```
 job-board-api/
-├── config/config.js          # sequelize-cli DB config (per NODE_ENV)
-├── migrations/                # Sequelize migrations (schema history)
-├── seeders/seed.js            # Demo data seed script
+├── api/index.js               # Vercel serverless entry point
+├── config/config.js           # sequelize-cli DB config (per NODE_ENV)
+├── migrations/                 # Sequelize migrations (schema history)
+├── seeders/seed.js             # Demo data seed script
 ├── src/
-│   ├── app.js                 # Express app assembly (middleware, routes, docs)
-│   ├── server.js               # Entry point
-│   ├── config/database.js      # Runtime Sequelize connection
-│   ├── models/                 # Sequelize models + associations
-│   ├── controllers/            # Route handlers (business logic)
-│   ├── routes/                 # Route definitions + Swagger annotations
-│   ├── middleware/              # auth, validate, errorHandler, rateLimiter
-│   ├── validators/              # Zod schemas per resource
-│   ├── utils/                   # ApiError, asyncHandler
-│   └── swagger.js               # OpenAPI spec generation
-├── tests/                       # Jest + Supertest integration tests
+│   ├── app.js                  # Express app assembly (middleware, routes, docs)
+│   ├── server.js                # Entry point (traditional hosts)
+│   ├── config/database.js       # Runtime Sequelize connection
+│   ├── models/                  # Sequelize models + associations
+│   ├── controllers/             # Route handlers (business logic)
+│   ├── routes/                  # Route definitions + Swagger annotations
+│   ├── middleware/               # auth, validate, errorHandler, rateLimiter
+│   ├── validators/               # Zod schemas per resource
+│   ├── utils/                    # ApiError, asyncHandler
+│   └── swagger.js                # OpenAPI spec generation
+├── tests/                        # Jest + Supertest integration tests
 ├── Dockerfile / docker-compose.yml
+├── vercel.json
 ├── postman_collection.json
 ├── ARCHITECTURE.md
 └── README.md
@@ -307,6 +335,19 @@ job-board-api/
 
 ---
 
-## License
+## 📜 License
 
 MIT
+
+---
+
+## 👤 Author
+
+**Mehak Channa**
+
+- GitHub: [@mehakchanna04-coder](https://github.com/mehakchanna04-coder)
+- Project repo: [NeuroFive_internship_tasks](https://github.com/mehakchanna04-coder/NeuroFive_internship_tasks)
+
+<sub>Built as part of a backend engineering internship project — combining
+authentication, relational data modeling, testing, and deployment into one
+end-to-end system.</sub>
